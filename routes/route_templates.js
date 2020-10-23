@@ -1,33 +1,26 @@
-const express = require("express");
-const router = express.Router();
-const { Client } = require('pg')
-const client = new Client({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'schplatdb',
-  password: '1234',
-  port: 5432,
-});
+const db = require('../db')
 
-router.post('/register', (req, res) => {
-  let user = req.body
-  let query = `INSERT INTO users(email, handle, password, created_date) VALUES($1, $2, $3, TO_TIMESTAMP($4 / 1000.0)) RETURNING *`
-  const values = [user.email, user.handle, user.password, user.created_date]
-  console.log(req.body)
-  
-  try {
-    client.connect()
-    client.query(query, values, (err, res) => {
-      if (err) {
-        console.log(err.stack)
-      } else {
-        console.log(res.rows[0])
-      }
-    })
-  } catch (err) {
-    console.error(err.message)
+exports.insert = (table, body, response) => {  
+  let query = `INSERT INTO ${table}(`
+  let queryValues = ` VALUES(`
+  let values = Object.values(body)
+  let i = 1
+
+  for (const key in body) {
+    query += `${key}, `
+    if (key == 'created_date' || key == 'updated_date') {
+      queryValues += `TO_TIMESTAMP($${i} / 1000.0), `
+    } else {
+      queryValues += `$${i}, `
+    }
+    i++
   }
-  setTimeout(() => { client.end() }, 1000)
-})
-
-module.exports = router;
+  query = (query.slice(0, -2) + ')')
+  queryValues = (queryValues.slice(0, -2) + ') RETURNING *')
+  query += queryValues
+  
+  db.query(query, values, (err, res) => {
+    if (err) return console.error(err)
+    response.send(res.rows[0])
+  })
+}

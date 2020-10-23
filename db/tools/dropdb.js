@@ -1,18 +1,7 @@
-const { Client } = require('pg');
-
-const client = new Client({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'schplatdb',
-  password: '1234',
-  port: 5432,
-});
-
+const db = require('../index')
 const query = `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`
 
-async function deleteTables() {
-  await client.connect()
-  await client.query(query)
-  await client.end()
-}
-deleteTables()
+db.query(query, undefined, (err, res) => {
+  if (err) return console.error(err)
+  return console.log('Tables Dropped')
+})

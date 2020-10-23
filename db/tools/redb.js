@@ -1,27 +1,15 @@
-const { Client } = require('pg');
+const db = require('../index')
 const glob = require('glob');
 const path = require('path');
 
-const client = new Client({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'schplatdb',
-  password: '1234',
-  port: 5432,
-});
-
-const deleteQuery = `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`
-let createQuery = `CREATE EXTENSION IF NOT EXISTS pgcrypto;`;
+let query = `DROP SCHEMA public CASCADE; CREATE SCHEMA public; CREATE EXTENSION IF NOT EXISTS pgcrypto;`;
 
 glob.sync('./db/models/**/*.js').forEach(file => {
   let table = require(path.resolve(file)).default;
-  createQuery += table
+  query += table
 });
 
-async function reTables() {
-  await client.connect()
-  await client.query(deleteQuery)
-  await client.query(createQuery)
-  await client.end()
-}
-reTables()
+db.query(query, undefined, (err, res) => {
+  if (err) return console.error(err)
+  return console.log('Tables Recreated')
+})
