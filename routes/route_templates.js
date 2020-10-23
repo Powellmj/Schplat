@@ -3,7 +3,7 @@ const db = require('../db')
 exports.insert = (table, body, response) => {  
   let query = `INSERT INTO ${table}(`
   let queryValues = ` VALUES(`
-  let values = Object.values(body)
+  const values = Object.values(body)
   let i = 1
 
   for (const key in body) {

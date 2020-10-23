@@ -4,6 +4,7 @@
   "description": "space chat lat",
   "main": "app.js",
   "scripts": {
+    "initdb": "node ./db/tools/initdb",
     "createdb": "node ./db/tools/createdb",
     "dropdb": "node ./db/tools/dropdb",
     "redb": "node ./db/tools/redb",

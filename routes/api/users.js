@@ -12,9 +12,9 @@ router.post('/create', (req, response) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   if (!isValid) return response.status(400).json(errors);
   
-  let query = `SELECT * FROM users WHERE email = $1`;
-  let values = [req.body.email];
-  let newUser = req.body;
+  const query = `SELECT * FROM users WHERE email = $1`;
+  const values = [req.body.email];
+  const newUser = req.body;
 
   db.query(query, values, (err, res) => {
     if (err) return response.status(400).json(err)
@@ -39,12 +39,12 @@ router.post('/login', (req, response) => {
     return response.status(400).json(errors);
   }
 
-  let query = `SELECT * FROM users WHERE email = $1`;
-  let values = [req.body.email];
+  const query = `SELECT * FROM users WHERE email = $1`;
+  const values = [req.body.email];
 
   db.query(query, values, (err, res) => {
     if (err) return response.status(400).json(err)
-    let user = res.rows[0]
+    const user = res.rows[0]
     if (!user) {
       errors.email = 'Invalid Email/Password Combination';
       return response.status(404).json(errors);
